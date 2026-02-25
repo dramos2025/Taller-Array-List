@@ -4,5 +4,5 @@ Integrantes del grupo:
 
 Alejandro Moreno Lacharme   
 David Santiago Ramos Duque   
-Julián Pulido Junco   
+Julián David Pulido Junco   
 David Santiago Forero Cuervo
