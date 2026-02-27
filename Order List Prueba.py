@@ -1,138 +1,150 @@
 class OrderList:
     
-    def __init__(self, elementos_iniciales=None):
-        if elementos_iniciales is None:
-            elementos_iniciales = []
-        self._datos = sorted(elementos_iniciales)
+    # initial_elements: allow the collection to start with some elements
+    def __init__(self, initial_elements=[]):
+        # Creamos una copia ordenada para mantener el invariante
+        self._data = sorted(initial_elements)
     
     
-    # Representación en texto
+    # return an str of the collection
     def __str__(self):
-        return str(self._datos)
+        return str(self._data)
     
     
-    # Longitud
+    # return the length of the elements in the collection
     def __len__(self):
-        return len(self._datos)
+        return len(self._data)
     
     
-    # Acceso por índice (permitido porque no rompe el orden)
-    def __getitem__(self, indice):
-        if indice < 0 or indice >= len(self._datos):
-            raise IndexError("Índice fuera de rango")
-        return self._datos[indice]
-    
-    
-    # Verificar si está vacía
-    def esta_vacia(self):
-        return len(self._datos) == 0
-    
-    
-    # Iterador
-    def __iter__(self):
-        for elemento in self._datos:
-            yield elemento
-    
-    
-    # 🔎 Búsqueda binaria
-    def __contains__(self, elemento):
-        izquierda = 0
-        derecha = len(self._datos) - 1
+    # return the element of the collection in the index position
+    # Error: the index dont exist
+    def __getitem__(self, index):
+        if self.isEmpty():
+            raise IndexError("The list is empty")
         
-        while izquierda <= derecha:
-            medio = (izquierda + derecha) // 2
+        if index < 0 or index >= len(self._data):
+            raise IndexError("Index out of range")
+        
+        return self._data[index]
+
+
+    # return a boolean that implies if the collection is empty or not
+    def isEmpty(self):
+        return len(self._data) == 0
+    
+    
+    # allow the collection to be called in a for loop
+    def __iter__(self):
+        for element in self._data:
+            yield element
+    
+    
+    # return a boolean value representing the existence of an element in the collection
+    def __contains__(self, element):
+        if self.isEmpty():
+            return False
+        
+        # búsqueda binaria simple
+        left = 0
+        right = len(self._data) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
             
-            if self._datos[medio] == elemento:
+            if self._data[mid] == element:
                 return True
-            elif self._datos[medio] < elemento:
-                izquierda = medio + 1
+            elif self._data[mid] < element:
+                left = mid + 1
             else:
-                derecha = medio - 1
+                right = mid - 1
         
         return False
     
     
-    # 🔥 Encontrar posición correcta (binaria)
-    def _buscar_posicion(self, elemento):
-        izquierda = 0
-        derecha = len(self._datos)
+    # add the element keeping the order
+    def add(self, element):
+        # Insertar manteniendo orden (búsqueda lineal simple estilo académico)
+        position = 0
         
-        while izquierda < derecha:
-            medio = (izquierda + derecha) // 2
-            
-            if self._datos[medio] < elemento:
-                izquierda = medio + 1
-            else:
-                derecha = medio
+        while position < len(self._data) and self._data[position] < element:
+            position += 1
         
-        return izquierda
+        self._data.insert(position, element)
     
     
-    # Insertar manteniendo orden
-    def agregar(self, elemento):
-        posicion = self._buscar_posicion(elemento)
-        self._datos.insert(posicion, elemento)
-    
-    
-    # Eliminar por valor
-    def eliminar(self, elemento):
-        if elemento not in self:
-            raise ValueError("Elemento no encontrado")
+    # remove an element in the collection by its value
+    # Error: the element dont exist in the collection
+    def remove(self, element):
+        if self.isEmpty():
+            raise ValueError("The list is empty")
         
-        posicion = self._buscar_posicion(elemento)
-        self._datos.pop(posicion)
+        if element not in self:
+            raise ValueError("Element not found")
+        
+        index = 0
+        while index < len(self._data):
+            if self._data[index] == element:
+                self._data.pop(index)
+                return
+            index += 1
     
     
-    # Sacar por índice (no rompe orden porque solo elimina)
-    def sacar(self, indice):
-        if indice < 0 or indice >= len(self._datos):
-            raise IndexError("Índice fuera de rango")
-        return self._datos.pop(indice)
+    # remove and return the element in the collection by its index
+    def pop(self, index):
+        if self.isEmpty():
+            raise IndexError("The list is empty")
+        
+        if index < 0 or index >= len(self._data):
+            raise IndexError("Index out of range")
+        
+        return self._data.pop(index)
     
     
-    # Vaciar lista
-    def limpiar(self):
-        self._datos.clear()
+    # remove all elements in the collection
+    def clear(self):
+        self._data.clear()
 
 if __name__ == "__main__":
     
-    print("=== CREANDO ORDER LIST ===")
-    lista = OrderList([30, 10, 20, 60])
-    print("Lista inicial (ordenada automáticamente):", lista)
-    print("Longitud:", len(lista))
-    print("¿Está vacía?:", lista.esta_vacia())
+    print("=== Creating OrderList ===")
+    order_list = OrderList([30, 10, 20, 60])
     
-    print("\n=== AGREGAR ELEMENTOS ===")
-    lista.agregar(40)
-    print("Después de agregar 40:", lista)
+    print("Initial list (ordered automatically):", order_list)
+    print("Length:", len(order_list))
+    print("Is empty?:", order_list.isEmpty())
     
-    lista.agregar(5)
-    print("Después de agregar 5:", lista)
+    print("\n=== Adding elements ===")
+    order_list.add(40)
+    print("After adding 40:", order_list)
     
-    lista.agregar(70)
-    print("Después de agregar 70:", lista)
+    order_list.add(5)
+    print("After adding 5:", order_list)
     
-    print("\n=== ACCESO POR ÍNDICE ===")
-    print("Elemento en índice 2:", lista[2])
+    order_list.add(70)
+    print("After adding 70:", order_list)
     
-    print("\n=== BÚSQUEDA (BINARIA) ===")
-    print("¿Está 20 en la lista?", 20 in lista)
-    print("¿Está 100 en la lista?", 100 in lista)
+    print("\n=== Access by index ===")
+    print("Element at index 2:", order_list[2])
     
-    print("\n=== ITERACIÓN ===")
-    for elemento in lista:
-        print(elemento)
+    print("\n=== Searching elements ===")
+    print("Is 20 in the list?", 20 in order_list)
+    print("Is 100 in the list?", 100 in order_list)
     
-    print("\n=== ELIMINAR ===")
-    lista.eliminar(20)
-    print("Después de eliminar 20:", lista)
+    print("\n=== Iterating with for ===")
+    for element in order_list:
+        print(element)
     
-    print("\n=== SACAR POR ÍNDICE ===")
-    eliminado = lista.sacar(1)
-    print("Elemento eliminado en índice 1:", eliminado)
-    print("Lista actual:", lista)
+    print("\n=== Removing element by value ===")
+    order_list.remove(20)
+    print("After removing 20:", order_list)
     
-    print("\n=== LIMPIAR ===")
-    lista.limpiar()
-    print("Después de limpiar:", lista)
-    print("Longitud final:", len(lista))
+    print("\n=== Pop by index ===")
+    removed = order_list.pop(1)
+    print("Removed element at index 1:", removed)
+    print("Current list:", order_list)
+    
+    print("\n=== Clearing list ===")
+    order_list.clear()
+    print("After clear:", order_list)
+    print("Is empty now?:", order_list.isEmpty())
+    
